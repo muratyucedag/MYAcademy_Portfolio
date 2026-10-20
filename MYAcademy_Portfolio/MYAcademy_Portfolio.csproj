@@ -17,6 +17,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ViewComponents\AdminViewComponents\" />
+    <Folder Include="ViewComponents\StatisticsViewComponents\" />
+    <Folder Include="Views\Shared\Components\" />
   </ItemGroup>
 
 </Project>
