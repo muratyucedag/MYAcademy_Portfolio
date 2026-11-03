@@ -1,0 +1,262 @@
+﻿@model MYAcademy_Portfolio.Entities.Message
+@{
+    ViewData["Title"] = "Yeni Mesaj";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+@section Styles {
+    <style>
+        .form-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .form-card-header {
+            padding: 20px 26px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .form-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--pastel-purple);
+            color: var(--primary-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .form-card-body {
+            padding: 26px;
+        }
+
+        .form-card-footer {
+            padding: 16px 26px;
+            border-top: 1px solid var(--border-color);
+            background: #FAFBFE;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-label {
+            font-size: 0.83rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+            .form-label .req {
+                color: #c0342b;
+            }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #DCE1ED;
+            padding: 9px 13px;
+            font-size: 0.88rem;
+        }
+
+        .input-icon-wrap {
+            position: relative;
+        }
+
+            .input-icon-wrap i {
+                position: absolute;
+                left: 13px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--text-secondary);
+                pointer-events: none;
+            }
+
+            .input-icon-wrap .form-control {
+                padding-left: 38px;
+            }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .btn-accent {
+            background: var(--primary-accent);
+            border: 1px solid var(--primary-accent);
+            color: #fff;
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 9px 20px;
+            box-shadow: 0 4px 12px rgba(130, 118, 217, 0.25);
+        }
+
+            .btn-accent:hover {
+                background: var(--primary-accent-hover);
+                color: #fff;
+            }
+
+        .btn-soft {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 12px;
+            font-weight: 500;
+            padding: 9px 18px;
+        }
+
+            .btn-soft:hover {
+                background: #F8F9FD;
+                color: var(--primary-accent);
+            }
+
+        .info-card {
+            background: linear-gradient(145deg, #3C446B, #59658D);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            color: #DCE2F5;
+        }
+
+            .info-card h6 {
+                color: #fff;
+                font-weight: 700;
+            }
+
+        .info-item {
+            display: flex;
+            gap: 10px;
+            font-size: 0.82rem;
+            margin-top: 14px;
+            line-height: 1.45;
+        }
+
+            .info-item i {
+                color: #A294F9;
+                font-size: 1rem;
+            }
+
+        .field-validation-error {
+            font-size: 0.78rem;
+            color: #c0342b;
+        }
+    </style>
+}
+
+<div class="row g-4">
+    <!-- FORM -->
+    <div class="col-lg-8">
+        <div class="form-card">
+            <form asp-area="Admin" asp-action="CreateMessage" method="post">
+
+                <div class="form-card-header">
+                    <div class="form-card-icon"><i class="bi bi-send"></i></div>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Yeni Mesaj Oluştur</h5>
+                        <small class="text-secondary">Gönderici bilgilerini ve mesaj içeriğini doldurun.</small>
+                    </div>
+                </div>
+
+                <div class="form-card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                    <div class="row g-4">
+                        <!-- Ad Soyad -->
+                        <div class="col-md-6">
+                            <label asp-for="NameSurname" class="form-label">Ad Soyad <span class="req">*</span></label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="NameSurname" class="form-control" placeholder="Örn: Ahmet Yılmaz" required />
+                            </div>
+                            <span asp-validation-for="NameSurname"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label">E-posta <span class="req">*</span></label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-envelope"></i>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="ornek@mail.com" required />
+                            </div>
+                            <span asp-validation-for="Email"></span>
+                        </div>
+
+                        <!-- Konu -->
+                        <div class="col-12">
+                            <label asp-for="Subject" class="form-label">Konu <span class="req">*</span></label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-chat-left-text"></i>
+                                <input asp-for="Subject" class="form-control" placeholder="Örn: Proje Hakkında" required />
+                            </div>
+                            <span asp-validation-for="Subject"></span>
+                        </div>
+
+                        <!-- Mesaj -->
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-end">
+                                <label asp-for="MessageDetail" class="form-label">Mesaj <span class="req">*</span></label>
+                                <span class="char-counter mb-1"><span id="charCount">0</span> / 2000</span>
+                            </div>
+                            <textarea asp-for="MessageDetail" id="messageDetail" class="form-control" rows="7" maxlength="2000"
+                                      placeholder="Mesajınızı buraya yazın..." required></textarea>
+                            <span asp-validation-for="MessageDetail"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-card-footer">
+                    <a asp-area="Admin" asp-action="MessageList" class="btn btn-soft">
+                        <i class="bi bi-arrow-left me-1"></i> Vazgeç
+                    </a>
+                    <button type="reset" class="btn btn-soft">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Temizle
+                    </button>
+                    <button type="submit" class="btn btn-accent">
+                        <i class="bi bi-send me-1"></i> Mesajı Gönder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BİLGİ KARTI -->
+    <div class="col-lg-4">
+        <div class="info-card">
+            <h6 class="mb-1"><i class="bi bi-info-circle me-1"></i> Bilgilendirme</h6>
+            <small class="text-white-50">Mesaj kaydedilirken bazı alanlar otomatik doldurulur.</small>
+
+            <div class="info-item">
+                <i class="bi bi-calendar-check"></i>
+                <span><strong class="text-white">Gönderim tarihi</strong> kayıt anında otomatik olarak atanır.</span>
+            </div>
+            <div class="info-item">
+                <i class="bi bi-envelope-open"></i>
+                <span><strong class="text-white">Okunma durumu</strong> varsayılan olarak "Okunmadı" şeklinde kaydedilir.</span>
+            </div>
+            <div class="info-item">
+                <i class="bi bi-list-check"></i>
+                <span>Gönderdikten sonra <strong class="text-white">Mesaj Listesi</strong> sayfasına yönlendirilirsiniz.</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const messageInput = document.getElementById("messageDetail");
+        const charCount = document.getElementById("charCount");
+
+        function updateCount() {
+            charCount.textContent = messageInput.value.length;
+        }
+
+        messageInput.addEventListener("input", updateCount);
+        document.querySelector("form").addEventListener("reset", () => setTimeout(updateCount, 0));
+        updateCount();
+    </script>
+}

@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "ExperienceList";
-    Layout = null;
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
 }
 
 <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -27,8 +27,8 @@
                 <td>@item.SideTitle</td>
                 <td>@item.Duration</td>
                 <td>@item.IsActive</td>
-                <td>Sil</td>
-                <td>Güncelle</td>
+                <td><a href="/Admin/Experience/DeleteExperience/@item.ExperienceId" class="btn btn-danger">Sil</a></td>
+                <td><a href="/Admin/Experience/UpdateExperience/@item.ExperienceId" class="btn btn-success">Güncelle</a></td>
             </tr>
         }
     </table>

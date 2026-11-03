@@ -15,6 +15,7 @@
             <th>Konu</th>
             <th>Tarih</th>
             <th>Mesajı Aç</th>
+            <th>Sil</th>
         </tr>
 
         @foreach(var item in Model)
@@ -26,6 +27,7 @@
                 <td>@item.Subject</td>
                 <td>@item.SendDate.ToString("dd MMM yyyy")</td>
                 <td><a href="/Admin/Message/MessageDetail/@item.MessageId" class="btn btn-primary">Mesajı Aç</a></td>
+                <td><a href="/Admin/Message/DeleteMessage/@item.MessageId" class="btn btn-danger">Mesajı Sil</a></td>
             </tr>
         }
 

@@ -1,22 +1,544 @@
 ﻿@{
     Layout = null;
-}
 
+    // Breadcrumb için route bilgileri (örn: Admin / Deneyimler / DeneyimListesi)
+    var area = ViewContext.RouteData.Values["area"]?.ToString();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var pageTitle = ViewData["Title"]?.ToString() ?? action;
+
+    // Aktif menü kontrolü
+    string Active(string ctrl) =>
+        string.Equals(controller, ctrl, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
 <!DOCTYPE html>
 <html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@pageTitle | Portfolyo Admin</title>
 
-@await Component.InvokeAsync("_AdminLayoutHeadComponentPartial")
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --sidebar-bg: #343B5C;
+            --sidebar-surface: #424B70;
+            --sidebar-active: #59658D;
+            --sidebar-text: #DCE2F5;
+            --sidebar-border: rgba(220, 226, 245, 0.08);
+            --bg-main: #F6F7FC;
+            --card-bg: #FFFFFF;
+            --text-primary: #29344C;
+            --text-secondary: #8490A5;
+            --primary-accent: #8276D9;
+            --primary-accent-hover: #7063cb;
+            --border-color: #E9ECF4;
+            --pastel-purple: #EEEAFE;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-subtle: 0 4px 20px rgba(41, 52, 76, 0.04);
+            --sidebar-width: 260px;
+            --transition-base: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 0.925rem;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cfd6e4;
+            border-radius: 4px;
+        }
+
+        /* ========== SIDEBAR ========== */
+        #sidebar-wrapper {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            z-index: 1040;
+            box-shadow: 4px 0 25px rgba(22, 26, 45, 0.12);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 22px 20px 18px;
+            border-bottom: 1px solid var(--sidebar-border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #A294F9 0%, #7664E8 100%);
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(118, 100, 232, 0.35);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 14px 16px;
+        }
+
+        .nav-group-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(220, 226, 245, 0.5);
+            margin: 18px 10px 8px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            margin-bottom: 2px;
+            border-radius: var(--radius-md);
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: var(--transition-base);
+            position: relative;
+        }
+
+            .sidebar-link i {
+                font-size: 1.05rem;
+                color: rgba(220, 226, 245, 0.7);
+            }
+
+            .sidebar-link:hover {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.06);
+            }
+
+                .sidebar-link:hover i {
+                    color: #fff;
+                }
+
+            .sidebar-link.active {
+                background-color: var(--sidebar-active);
+                color: #fff;
+                font-weight: 600;
+            }
+
+                .sidebar-link.active i {
+                    color: #fff;
+                }
+
+                .sidebar-link.active::before {
+                    content: '';
+                    position: absolute;
+                    left: -8px;
+                    top: 6px;
+                    bottom: 6px;
+                    width: 4px;
+                    border-radius: 4px;
+                    background: #A294F9;
+                }
+
+        .sidebar-user {
+            margin: 0 14px 14px;
+            padding: 12px 14px;
+            background: var(--sidebar-surface);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8276D9, #E4F0FE);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #29344C;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        /* ========== MAIN WRAPPER ========== */
+        #main-content-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* ========== NAVBAR ========== */
+        .admin-navbar {
+            height: 68px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            gap: 16px;
+        }
+
+        .nav-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: var(--transition-base);
+        }
+
+            .nav-icon-btn:hover {
+                background: var(--pastel-purple);
+                color: var(--primary-accent);
+            }
+
+        .nav-user-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: none;
+            background: transparent;
+            padding: 4px;
+            border-radius: 30px;
+        }
+
+        .dropdown-menu {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: 0 14px 34px rgba(32, 40, 68, 0.12);
+            padding: 6px;
+        }
+
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.86rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .dropdown-item:hover {
+                background: #F2F4F9;
+                color: var(--primary-accent);
+            }
+
+        /* ========== BREADCRUMB / PAGE HEADER ========== */
+        .page-header {
+            padding: 22px 28px 0;
+        }
+
+            .page-header h1 {
+                font-size: 1.35rem;
+                font-weight: 700;
+                margin: 0 0 4px;
+            }
+
+        .breadcrumb {
+            margin: 0;
+            font-size: 0.82rem;
+        }
+
+        .breadcrumb-item a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+            .breadcrumb-item a:hover {
+                color: var(--primary-accent);
+            }
+
+        .breadcrumb-item.active {
+            color: var(--primary-accent);
+            font-weight: 600;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "/";
+            color: #C3CAD9;
+        }
+
+        /* ========== CONTENT (RenderBody) ========== */
+        .main-body-container {
+            flex: 1;
+            padding: 20px 28px 28px;
+            min-width: 0;
+        }
+
+            /* Eklenen sayfalardaki tablolar/formlar taşmasın */
+            .main-body-container .table {
+                background: var(--card-bg);
+            }
+
+            .main-body-container .table-responsive,
+            .main-body-container table {
+                max-width: 100%;
+            }
+
+        .btn-primary {
+            background-color: var(--primary-accent);
+            border-color: var(--primary-accent);
+        }
+
+            .btn-primary:hover, .btn-primary:focus {
+                background-color: var(--primary-accent-hover);
+                border-color: var(--primary-accent-hover);
+            }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px rgba(130, 118, 217, 0.14);
+        }
+
+        /* ========== FOOTER ========== */
+        .admin-footer {
+            border-top: 1px solid var(--border-color);
+            background: #fff;
+            padding: 16px 28px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+            .admin-footer a {
+                color: var(--text-secondary);
+                text-decoration: none;
+            }
+
+                .admin-footer a:hover {
+                    color: var(--primary-accent);
+                }
+
+        /* ========== MOBILE ========== */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(22, 26, 45, 0.45);
+            z-index: 1035;
+        }
+
+        @@media (max-width: 991.98px) {
+            #sidebar-wrapper {
+                transform: translateX(-100%);
+            }
+
+            body.sidebar-open #sidebar-wrapper {
+                transform: translateX(0);
+            }
+
+            body.sidebar-open .sidebar-overlay {
+                display: block;
+            }
+
+            #main-content-wrapper {
+                margin-left: 0;
+            }
+
+            .admin-navbar, .page-header, .main-body-container, .admin-footer {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+        }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
 
 <body>
 
-    @await Component.InvokeAsync("_AdminLayoutSidebarComponentPartial")
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside id="sidebar-wrapper">
+        <a href="/Admin" class="sidebar-brand">
+            <div class="brand-mark">P</div>
+            <div>
+                <div class="fw-bold text-white lh-1" style="font-family: 'Plus Jakarta Sans';">Poyraz.</div>
+                <small class="text-white-50" style="font-size: 0.72rem;">Portfolio Admin</small>
+            </div>
+        </a>
 
-    @await Component.InvokeAsync("_AdminLayoutMobileSidebarComponentPartial")
+        <nav class="sidebar-nav">
+            <div class="nav-group-title">Genel</div>
+            <a href="/Admin/Dashboard/Index" class="sidebar-link @Active("Dashboard")">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+            </a>
 
-    @RenderBody()
+            <div class="nav-group-title">İçerik</div>
+            <a href="/Admin/About/Index" class="sidebar-link @Active("About")">
+                <i class="bi bi-person"></i><span>Hakkımda</span>
+            </a>
+            <a href="/Admin/Education/Index" class="sidebar-link @Active("Education")">
+                <i class="bi bi-mortarboard"></i><span>Eğitim</span>
+            </a>
+            <a href="/Admin/Deneyimler/DeneyimListesi" class="sidebar-link @Active("Deneyimler")">
+                <i class="bi bi-briefcase"></i><span>Deneyimler</span>
+            </a>
+            <a href="/Admin/Skill/Index" class="sidebar-link @Active("Skill")">
+                <i class="bi bi-code-slash"></i><span>Yetenekler</span>
+            </a>
+            <a href="/Admin/Project/Index" class="sidebar-link @Active("Project")">
+                <i class="bi bi-grid"></i><span>Projeler</span>
+            </a>
+
+            <div class="nav-group-title">İletişim & Sistem</div>
+            <a href="/Admin/Message/Index" class="sidebar-link @Active("Message")">
+                <i class="bi bi-envelope"></i><span>Mesajlar</span>
+            </a>
+            <a href="/Admin/Setting/Index" class="sidebar-link @Active("Setting")">
+                <i class="bi bi-gear"></i><span>Ayarlar</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">MY</div>
+            <div class="overflow-hidden">
+                <div class="fw-semibold text-white text-truncate" style="font-size: 0.83rem;">Murat Yücedağ</div>
+                <div style="font-size: 0.7rem; color: #B3BFDF;">Yönetici</div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- ==================== MAIN ==================== -->
+    <div id="main-content-wrapper">
+
+        <!-- NAVBAR -->
+        <header class="admin-navbar">
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="nav-icon-btn d-lg-none" onclick="toggleSidebar()" aria-label="Menü">
+                    <i class="bi bi-list"></i>
+                </button>
+                <span class="fw-semibold d-none d-sm-inline" style="font-family: 'Plus Jakarta Sans';">Yönetim Paneli</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <a href="/" target="_blank" class="nav-icon-btn" title="Siteyi Görüntüle">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+                <a href="/Admin/Message/Index" class="nav-icon-btn" title="Mesajlar">
+                    <i class="bi bi-envelope"></i>
+                </a>
+
+                <div class="dropdown">
+                    <button class="nav-user-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar">MY</div>
+                        <span class="fw-semibold d-none d-md-inline" style="font-size: 0.85rem;">Murat Yücedağ</span>
+                        <i class="bi bi-chevron-down small text-secondary d-none d-md-inline"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/Admin/Profile/Index"><i class="bi bi-person-circle"></i> Profilim</a></li>
+                        <li><a class="dropdown-item" href="/Admin/Setting/Index"><i class="bi bi-gear"></i> Ayarlar</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/Login/Logout"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- BREADCRUMB / URL -->
+        <div class="page-header">
+            <h1>@pageTitle</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    @if (!string.IsNullOrEmpty(area))
+                    {
+                        <li class="breadcrumb-item"><a href="/@area"><i class="bi bi-house-door me-1"></i>@area</a></li>
+                    }
+                    @if (!string.IsNullOrEmpty(controller))
+                    {
+                        <li class="breadcrumb-item"><a href="@(string.IsNullOrEmpty(area) ? "" : "/" + area)/@controller">@controller</a></li>
+                    }
+                    @if (!string.IsNullOrEmpty(action))
+                    {
+                        <li class="breadcrumb-item active" aria-current="page">@action</li>
+                    }
+                </ol>
+            </nav>
+        </div>
+
+        <!-- CONTENT -->
+        <main class="main-body-container">
+            @RenderBody()
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="admin-footer">
+            <span>© @DateTime.Now.Year Poyraz. Portfolio Admin — Tüm hakları saklıdır.</span>
+            <span>
+                <a href="/" target="_blank">Siteyi Görüntüle</a>
+                <span class="mx-2">•</span>
+                <span>v1.0</span>
+            </span>
+        </footer>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.body.classList.toggle("sidebar-open");
+        }
+    </script>
 
-    @await Component.InvokeAsync("_AdminLayoutScriptComponentPartial")
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

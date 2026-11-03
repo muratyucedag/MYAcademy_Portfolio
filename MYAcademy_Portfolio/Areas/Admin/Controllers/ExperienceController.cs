@@ -31,5 +31,27 @@ namespace MYAcademy_Portfolio.Areas.Admin.Controllers
             _context.SaveChanges();
             return RedirectToAction("ExperienceList");
         }
+
+        public IActionResult DeleteExperience(int id)
+        {
+            var value = _context.Experiences.Find(id);
+            _context.Experiences.Remove(value);
+            _context.SaveChanges();
+            return RedirectToAction("ExperienceList");
+        }
+
+        public IActionResult UpdateExperience(int id)
+        {
+            var value = _context.Experiences.Find(id);
+            return View(value);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateExperience(Experience experience)
+        {
+            _context.Experiences.Update(experience);
+            _context.SaveChanges();
+            return RedirectToAction("ExperienceList");
+        }
     }
 }
