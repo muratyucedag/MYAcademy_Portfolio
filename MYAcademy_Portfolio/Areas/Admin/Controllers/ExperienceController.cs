@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MYAcademy_Portfolio.Context;
+using MYAcademy_Portfolio.Entities;
 
 namespace MYAcademy_Portfolio.Areas.Admin.Controllers
 {
@@ -16,5 +17,19 @@ namespace MYAcademy_Portfolio.Areas.Admin.Controllers
             var values = _context.Experiences.ToList();
             return View(values);
         }
+
+        [HttpGet]
+        public IActionResult CreateExperience()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateExperience(Experience experience)
+        {
+            _context.Experiences.Add(experience);
+            _context.SaveChanges();
+            return RedirectToAction("ExperienceList");
+        }
     }
-}//DI
+}

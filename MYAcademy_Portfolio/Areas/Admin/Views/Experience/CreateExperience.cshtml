@@ -1,0 +1,33 @@
+﻿@model MYAcademy_Portfolio.Entities.Experience
+
+@{
+    ViewData["Title"] = "CreateExperience";
+    Layout = null;
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<form method="post">
+<div class="container">
+    <br />
+    <label>Başlık</label>
+    <input type="text" asp-for="Title" class="form-control" />
+    <br />
+    <label>Şirket Adı</label>
+    <input type="text" asp-for="CompanyName" class="form-control" />
+    <br />
+    <label>Açıklama</label>
+    <input type="text" asp-for="Description" class="form-control" />
+    <br />
+    <label>Alt Başlık</label>
+    <input type="text" asp-for="SideTitle" class="form-control" />
+    <br />
+    <label>Çalışma Zamanı</label>
+    <input type="text" asp-for="Duration" class="form-control" />
+    <br />
+    <label>Çalışma Türü</label>
+    <input type="text" asp-for="WorkType" class="form-control" />
+    <br />
+    <button class="btn btn-info">Deneyimi Kaydet</button>
+</div>
+</form>
