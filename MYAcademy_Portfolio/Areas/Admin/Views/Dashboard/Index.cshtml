@@ -1,0 +1,540 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    int total = ViewBag.messageCount ?? 0;
+    int readCount = ViewBag.messageReadByTrueCount ?? 0;
+    int unreadCount = ViewBag.messageReadByFalseCount ?? 0;
+    int readPercent = total > 0 ? (int)Math.Round(readCount * 100.0 / total) : 0;
+    int unreadPercent = total > 0 ? 100 - readPercent : 0;
+}
+
+<style>
+    .dash {
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        color: #1f2937;
+        padding: 8px 4px 24px;
+    }
+
+        .dash * {
+            box-sizing: border-box;
+        }
+
+    .dash-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+        .dash-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .dash-header p {
+            margin: 4px 0 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+    .dash-btn {
+        background: #4f46e5;
+        color: #fff;
+        border: none;
+        padding: 9px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .dash-btn:hover {
+            background: #4338ca;
+            color: #fff;
+        }
+
+    .dash-grid {
+        display: grid;
+        gap: 20px;
+    }
+
+    .dash-stats {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin-bottom: 20px;
+    }
+
+    .dash-main {
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        margin-bottom: 20px;
+    }
+
+    .dash-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+
+        .dash-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .dash-card h3 a {
+                font-size: 13px;
+                font-weight: 500;
+                color: #4f46e5;
+                text-decoration: none;
+            }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 2px 0 0;
+        line-height: 1.1;
+    }
+
+    .stat-sub {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 4px;
+    }
+
+    .bg-indigo {
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+
+    .bg-green {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .bg-amber {
+        background: #fffbeb;
+        color: #d97706;
+    }
+
+    .bg-sky {
+        background: #f0f9ff;
+        color: #0284c7;
+    }
+
+    .progress-row {
+        margin-bottom: 18px;
+    }
+
+        .progress-row:last-child {
+            margin-bottom: 0;
+        }
+
+    .progress-top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+        .progress-top span:last-child {
+            color: #6b7280;
+        }
+
+    .progress-bar {
+        height: 10px;
+        background: #f3f4f6;
+        border-radius: 99px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 99px;
+    }
+
+    .fill-green {
+        background: #10b981;
+    }
+
+    .fill-amber {
+        background: #f59e0b;
+    }
+
+    .donut-wrap {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .donut {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .donut-inner {
+        width: 96px;
+        height: 96px;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .donut-inner strong {
+            font-size: 22px;
+        }
+
+        .donut-inner small {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+    .legend {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 14px;
+    }
+
+        .legend li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .legend i {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+    .dash-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+        .dash-table th {
+            text-align: left;
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+
+        .dash-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+
+        .dash-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .dash-table tr:hover td {
+            background: #fafafa;
+        }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        color: #4338ca;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 13px;
+        margin-right: 10px;
+    }
+
+    .name-cell {
+        display: flex;
+        align-items: center;
+    }
+
+    .muted {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-read {
+        background: #ecfdf5;
+        color: #047857;
+    }
+
+    .badge-unread {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    .table-scroll {
+        overflow-x: auto;
+    }
+
+    .activity {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .activity li {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+        }
+
+            .activity li:last-child {
+                border-bottom: none;
+            }
+
+    .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        margin-top: 6px;
+        flex-shrink: 0;
+    }
+
+    .activity .time {
+        font-size: 12px;
+        color: #9ca3af;
+        display: block;
+        margin-top: 2px;
+    }
+
+    .quick-links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+        .quick-links a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            color: #1f2937;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+            .quick-links a:hover {
+                border-color: #4f46e5;
+                background: #f5f7ff;
+            }
+</style>
+
+<div class="dash">
+
+    <!-- Başlık -->
+    <div class="dash-header">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Hoş geldiniz! Portfolyo sitenizin genel durumu aşağıda.</p>
+        </div>
+        <a href="#" class="dash-btn">✉ Tüm Mesajlar</a>
+    </div>
+
+    <!-- İstatistik kartları -->
+    <div class="dash-grid dash-stats">
+        <div class="dash-card stat">
+            <div class="stat-icon bg-indigo">✉</div>
+            <div>
+                <p class="stat-label">Toplam Mesaj</p>
+                <p class="stat-value">@total</p>
+                <div class="stat-sub">Tüm zamanlar</div>
+            </div>
+        </div>
+        <div class="dash-card stat">
+            <div class="stat-icon bg-green">✔</div>
+            <div>
+                <p class="stat-label">Okunmuş Mesaj</p>
+                <p class="stat-value">@readCount</p>
+                <div class="stat-sub">%@readPercent oranında</div>
+            </div>
+        </div>
+        <div class="dash-card stat">
+            <div class="stat-icon bg-amber">●</div>
+            <div>
+                <p class="stat-label">Okunmamış Mesaj</p>
+                <p class="stat-value">@unreadCount</p>
+                <div class="stat-sub">%@unreadPercent oranında</div>
+            </div>
+        </div>
+        <div class="dash-card stat">
+            <div class="stat-icon bg-sky">👁</div>
+            <div>
+                <p class="stat-label">Bu Ay Ziyaretçi</p>
+                <p class="stat-value">1.284</p>
+                <div class="stat-sub">Geçen aya göre +12%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mesaj durumu + Grafik -->
+    <div class="dash-grid dash-main">
+        <div class="dash-card">
+            <h3>Mesaj Durumu</h3>
+            <div class="progress-row">
+                <div class="progress-top"><span>Okunmuş</span><span>@readCount / @total</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-green" style="width:@(readPercent)%"></div></div>
+            </div>
+            <div class="progress-row">
+                <div class="progress-top"><span>Okunmamış</span><span>@unreadCount / @total</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-amber" style="width:@(unreadPercent)%"></div></div>
+            </div>
+        </div>
+
+        <div class="dash-card">
+            <h3>Okunma Oranı</h3>
+            <div class="donut-wrap">
+                <div class="donut" style="background: conic-gradient(#10b981 0 @(readPercent)%, #f59e0b @(readPercent)% 100%);">
+                    <div class="donut-inner">
+                        <strong>%@readPercent</strong>
+                        <small>okundu</small>
+                    </div>
+                </div>
+                <ul class="legend">
+                    <li><i style="background:#10b981"></i> Okunmuş (@readCount)</li>
+                    <li><i style="background:#f59e0b"></i> Okunmamış (@unreadCount)</li>
+                    <li><i style="background:#4f46e5"></i> Toplam (@total)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hızlı mesaj listesi (statik) -->
+    <div class="dash-card" style="margin-bottom:20px;">
+        <h3>Son Mesajlar <a href="#">Tümünü gör →</a></h3>
+        <div class="table-scroll">
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th>Gönderen</th>
+                        <th>Konu</th>
+                        <th>Tarih</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><div class="name-cell"><span class="avatar">AY</span><div>Ahmet Yılmaz<div class="muted">ahmet@ornek.com</div></div></div></td>
+                        <td>Proje teklifi hakkında</td>
+                        <td class="muted">06.11.2026</td>
+                        <td><span class="badge badge-unread">Okunmadı</span></td>
+                    </tr>
+                    <tr>
+                        <td><div class="name-cell"><span class="avatar">EK</span><div>Elif Kaya<div class="muted">elif@ornek.com</div></div></div></td>
+                        <td>Web sitesi tasarımı</td>
+                        <td class="muted">05.11.2026</td>
+                        <td><span class="badge badge-unread">Okunmadı</span></td>
+                    </tr>
+                    <tr>
+                        <td><div class="name-cell"><span class="avatar">MD</span><div>Mehmet Demir<div class="muted">mehmet@ornek.com</div></div></div></td>
+                        <td>İş birliği önerisi</td>
+                        <td class="muted">03.11.2026</td>
+                        <td><span class="badge badge-read">Okundu</span></td>
+                    </tr>
+                    <tr>
+                        <td><div class="name-cell"><span class="avatar">ZÇ</span><div>Zeynep Çelik<div class="muted">zeynep@ornek.com</div></div></div></td>
+                        <td>Teşekkür mesajı</td>
+                        <td class="muted">01.11.2026</td>
+                        <td><span class="badge badge-read">Okundu</span></td>
+                    </tr>
+                    <tr>
+                        <td><div class="name-cell"><span class="avatar">BA</span><div>Burak Aksoy<div class="muted">burak@ornek.com</div></div></div></td>
+                        <td>Freelance iş talebi</td>
+                        <td class="muted">29.10.2026</td>
+                        <td><span class="badge badge-read">Okundu</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Son aktiviteler + Hızlı erişim (statik) -->
+    <div class="dash-grid dash-main">
+        <div class="dash-card">
+            <h3>Son Aktiviteler</h3>
+            <ul class="activity">
+                <li><span class="dot" style="background:#4f46e5"></span><div>Yeni bir proje eklendi: <b>E-Ticaret Sitesi</b><span class="time">2 saat önce</span></div></li>
+                <li><span class="dot" style="background:#10b981"></span><div>Hakkımda bölümü güncellendi<span class="time">Dün</span></div></li>
+                <li><span class="dot" style="background:#f59e0b"></span><div>Yeni yetenek eklendi: <b>ASP.NET Core</b><span class="time">3 gün önce</span></div></li>
+                <li><span class="dot" style="background:#0284c7"></span><div>Deneyim bilgileri düzenlendi<span class="time">1 hafta önce</span></div></li>
+            </ul>
+        </div>
+
+        <div class="dash-card">
+            <h3>Hızlı Erişim</h3>
+            <div class="quick-links">
+                <a href="#">📁 Projeler</a>
+                <a href="#">🛠 Yetenekler</a>
+                <a href="#">💼 Deneyimler</a>
+                <a href="#">🎓 Eğitim</a>
+                <a href="#">👤 Hakkımda</a>
+                <a href="#">✉ Mesajlar</a>
+            </div>
+        </div>
+    </div>
+
+</div>
